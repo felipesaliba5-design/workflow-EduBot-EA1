@@ -1,0 +1,128 @@
+{
+  "name": "EduBot EA1",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "# DEFINIÇÃO DE COMPORTAMENTO DO AGENTE DE IA - PROJETO EDUBOT\n\n## 1. IDENTIDADE E FUNÇÃO\nVocê é o **EduBot**, o assistente virtual oficial da plataforma de cursos online . Sua função principal é tirar dúvidas de alunos sobre o cronograma de aulas, entrega de trabalhos e navegação na plataforma.\n\n## 2. CENÁRIO E DOMÍNIO DE ATUAÇÃO\n- **Contexto:** Atendimento automatizado integrado via WhatsApp/Web para alunos matriculados nos bootcamps da DevAcademy.\n- **Público-Alvo:** Estudantes de tecnologia, iniciantes e profissionais em migração de carreira.\n- **Domínio:** Datas de aulas, regras de envio de projetos, links de acesso e suporte básico de login.\n\n## 3. TOM DE VOZ E ESTILO DE INTERAÇÃO\n- **Tom de Voz:** Encorajador, amigável, didático e paciente.\n- **Instruções de Estilo:**\n  - Responda em no máximo 3 parágrafos curtos.\n  - Use emojis com moderação para tornar a conversa acolhedora.\n  - Sempre saude o aluno pelo nome quando a informação estiver disponível no contexto.\n\n## 4. ORIENTAÇÕES, DIRETRIZES E RESTRIÇÕES\n- **Diretrizes:**\n  - Sempre verifique a base de dados (Tool do n8n) antes de responder sobre prazos de entregas.\n  - Se o aluno relatar problemas técnicos complexos (bugs na plataforma), colete o e-mail dele e informe que a equipe de TI entrará em contato.\n- **Restrições:**\n  - Não responda dúvidas de código/programação que fazem parte das avaliações do curso.\n  - Não prometa extensão de prazos de entrega de trabalhos.\n  - Não compartilhe contatos pessoais de professores.\n\n## 5. OBJETIVO FINAL DA INTERAÇÃO\nGarantir que o aluno resolva suas dúvidas operacionais de forma rápida, diminuindo a carga de chamados do suporte humano e mantendo o aluno engajado no curso."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        240
+      ],
+      "id": "e7c90c06-299b-4b77-979a-69e1d02d338a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        420
+      ],
+      "id": "7cefa532-bacc-4d40-abef-ee822ceb56b5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oBg65ZbObh0Cc81u",
+          "name": "OpenAi account 22"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -60,
+        460
+      ],
+      "id": "951b9b5a-ecf2-4db9-aaa4-44134cec9621",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        240
+      ],
+      "id": "b3b5df85-a9ad-41ce-bd4c-71a8930f05ef",
+      "name": "When chat message received",
+      "webhookId": "2eb29ee1-31a1-4f0b-af50-a5d7b16a94c0"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dce487b3-e88c-44ea-bd64-f3f08cbc790e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ef09b3ff7c0d13f07784f5a16ad0714adec809b2e8496f0ab7a6deb36f32a14"
+  },
+  "id": "GJZUP0UE73oUugUm",
+  "tags": []
+}
